@@ -110,8 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const successOverlay = document.getElementById('success-overlay');
     const resetFormBtn = document.getElementById('reset-form-btn');
     deletionForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Prevent default browser submit/redirect
+
         const submitBtn = deletionForm.querySelector('.submit-btn');
-        // Retrieve values for UI feedback
         const studentId = document.getElementById('form-student-id').value.trim();
         const studentName = document.getElementById('form-name').value.trim();
 
@@ -144,10 +145,28 @@ document.addEventListener('DOMContentLoaded', () => {
             Sending...
         `;
 
-        // Trigger success overlay animation after a brief delay while the form posts natively to the iframe
-        setTimeout(() => {
-            successOverlay.classList.add('active');
-            deletionForm.reset();
+        // Send form using fetch AJAX to FormSubmit
+        fetch(deletionForm.action, {
+            method: 'POST',
+            body: new FormData(deletionForm),
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Show success screen and clear form
+                successOverlay.classList.add('active');
+                deletionForm.reset();
+            } else {
+                alert('Oops! There was a problem submitting your request. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Submission error:', error);
+            alert('Unable to connect to the server. Please check your internet connection.');
+        })
+        .finally(() => {
             submitBtn.disabled = false;
             submitBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -156,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
                 Submit Request
             `;
-        }, 1200);
+        });
     });
 
     resetFormBtn.addEventListener('click', () => {
