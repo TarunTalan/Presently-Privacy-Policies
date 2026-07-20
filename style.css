@@ -186,6 +186,16 @@ li {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 14px var(--accent-glow);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.brand-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
 }
 
 .brand-logo svg {
@@ -688,41 +698,115 @@ textarea.form-control {
     color: var(--text-primary);
 }
 
-/* Mobile Toggle Hamburger for Small Screens */
+/* Mobile Header Top Bar & Navigation Drawer */
 .mobile-header {
     display: none;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bg-secondary);
+    background-color: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 110;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
+.mobile-header .brand-section {
+    margin-bottom: 0;
+    gap: 0.6rem;
+}
+
+.mobile-header .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+}
+
+.mobile-header .brand-logo-img {
+    border-radius: 10px;
+}
+
+.mobile-header .brand-info h3 {
+    font-size: 1.1rem;
+}
+
+.mobile-header .brand-info p {
+    font-size: 0.65rem;
+}
+
+.mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.mobile-theme-btn,
 .menu-toggle {
-    background: none;
-    border: none;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
     color: var(--text-primary);
     cursor: pointer;
-    padding: 0.25rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
+.mobile-theme-btn:hover,
+.menu-toggle:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+.mobile-theme-btn svg,
 .menu-toggle svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
 }
 
+/* Sidebar Backdrop Overlay */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 95;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* Responsiveness Rules */
+@media (max-width: 1280px) {
+    .main-content {
+        padding: 3.5rem 3rem;
+    }
+}
+
 @media (max-width: 1024px) {
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         left: 0;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
     }
     
     .sidebar.open {
@@ -732,29 +816,73 @@ textarea.form-control {
     .main-content {
         margin-left: 0;
         max-width: 100%;
-        padding: 6rem 2.5rem 3rem 2.5rem;
+        padding: 5.5rem 2rem 3rem 2rem;
     }
     
     .mobile-header {
         display: flex;
     }
+
+    .policy-section {
+        scroll-margin-top: 5.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .hero-section h1 {
+        font-size: clamp(2rem, 6vw, 2.75rem);
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+        gap: 1rem;
+    }
 }
 
 @media (max-width: 640px) {
     h1 {
-        font-size: 2rem;
+        font-size: 1.85rem;
     }
-    .hero-section h1 {
-        font-size: 2.25rem;
+    h2 {
+        font-size: 1.4rem;
     }
     .main-content {
-        padding: 5.5rem 1.25rem 2.5rem 1.25rem;
+        padding: 5rem 1.25rem 2rem 1.25rem;
+    }
+    .glass-card {
+        padding: 1.25rem;
     }
     .form-container {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
     .details-item {
         flex-direction: column;
         gap: 0.5rem;
+        padding: 1rem;
+    }
+    .details-indicator {
+        word-break: break-all;
+        white-space: normal;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .submit-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-header .brand-info p {
+        display: none;
+    }
+    .main-content {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
     }
 }

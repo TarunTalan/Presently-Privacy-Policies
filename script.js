@@ -6,8 +6,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Theme Management ---
     const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = themeToggleBtn.querySelector('.theme-icon');
-    const themeText = themeToggleBtn.querySelector('.theme-text');
+    const mobileThemeToggleBtn = document.getElementById('mobile-theme-toggle');
+    const themeIcon = themeToggleBtn ? themeToggleBtn.querySelector('.theme-icon') : null;
+    const mobileThemeIcon = mobileThemeToggleBtn ? mobileThemeToggleBtn.querySelector('.mobile-theme-icon') : null;
+    const themeText = themeToggleBtn ? themeToggleBtn.querySelector('.theme-text') : null;
     
     const sunIconSvg = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -36,46 +38,85 @@ document.addEventListener('DOMContentLoaded', () => {
         updateThemeUI('light');
     }
 
-    themeToggleBtn.addEventListener('click', () => {
+    function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         updateThemeUI(newTheme);
-    });
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    if (mobileThemeToggleBtn) {
+        mobileThemeToggleBtn.addEventListener('click', toggleTheme);
+    }
 
     function updateThemeUI(theme) {
         if (theme === 'dark') {
-            themeIcon.innerHTML = sunIconSvg;
-            themeText.textContent = 'Light Mode';
+            if (themeIcon) themeIcon.innerHTML = sunIconSvg;
+            if (mobileThemeIcon) mobileThemeIcon.innerHTML = sunIconSvg;
+            if (themeText) themeText.textContent = 'Light Mode';
         } else {
-            themeIcon.innerHTML = moonIconSvg;
-            themeText.textContent = 'Dark Mode';
+            if (themeIcon) themeIcon.innerHTML = moonIconSvg;
+            if (mobileThemeIcon) mobileThemeIcon.innerHTML = moonIconSvg;
+            if (themeText) themeText.textContent = 'Dark Mode';
         }
     }
 
-    // --- 2. Mobile Menu Toggle ---
+    // --- 2. Mobile Menu & Backdrop Toggle ---
     const menuToggleBtn = document.getElementById('menu-toggle');
     const sidebar = document.querySelector('.sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
     const tocLinks = document.querySelectorAll('.toc-link');
 
-    menuToggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
+    function toggleSidebar() {
+        const isOpen = sidebar.classList.toggle('open');
+        if (sidebarBackdrop) {
+            sidebarBackdrop.classList.toggle('active', isOpen);
+        }
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        if (sidebarBackdrop) {
+            sidebarBackdrop.classList.remove('active');
+        }
+    }
+
+    if (menuToggleBtn) {
+        menuToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
+        });
+    }
+
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+    }
+
+    // Close sidebar on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
     });
 
     // Close sidebar when clicking a TOC link (on mobile viewports)
     tocLinks.forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth <= 1024) {
-                sidebar.classList.remove('open');
+                closeSidebar();
             }
         });
     });
 
     // Close sidebar when clicking outside of it on mobile
     document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 1024 && !sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
-            sidebar.classList.remove('open');
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('open') && !sidebar.contains(e.target) && !menuToggleBtn.contains(e.target)) {
+            closeSidebar();
         }
     });
 
